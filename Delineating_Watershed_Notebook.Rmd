@@ -1,0 +1,110 @@
+---
+title: "Workflow for Delineating a Watershed"
+output: html_notebook
+---
+
+[![Credits: Roxanne Medina](watershed_image.jpg){width="800"}](https://roxannemedina.weebly.com/how-to-watershed-delineation.html)
+
+## Motivation
+
+Watershed delineation is an important task in water resource management and land permitting. The purpose of this notebook is to describe a workflow to delineate a watershed in a way that is approachable to any average Steve. The project files can be found in the Canvas page for the course.
+
+## Install dependencies
+
+Before beginning our analysis, we must install and import the necessary packages for delineating our watershed. We use two common spatial packages from R, `sp` and `raster`, which will allow us to extract and plot valuable information from a raster file.
+
+For detailed information about these packages, refer to the [sp package guide](https://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf) and the [raster package documentation](https://rspatial.org/raster/pkg/1-introduction.html).
+
+```{r}
+install.packages("raster", dependencies = TRUE)
+
+library(sp)
+library(raster)
+```
+
+## Load the data
+
+Continuing with our environment set up, we will need to set a suitable project directory to store output files. Using the same file hierarchy as the one provided in the download file, we run the following code to set the output location to be the processed data folder.
+
+```{r}
+getwd()
+setwd("./data/processed")
+```
+
+## Analyze the raster
+
+The analysis consists of using the loaded packages to extract different information from the `DEM_watershed.tif` file.
+
+We first start by assigning our DEM raster to a variable called `DEM.watershed` and update it to the minimum and maximum value of the raster file:
+
+```{r}
+setwd("./data/processed")
+
+DEM.watershed <- raster("DEM_watershed.tif")
+DEM.watershed <- setMinMax(DEM.watershed)
+
+```
+
+The packages contain built-in methods, which can be called to obtain raster information such as the coordinate reference system, the extent, and its elevation.
+
+```{r}
+# raster attributes
+DEM.watershed
+
+# coordinate reference system
+DEM.watershed@crs
+
+# spatial extent, deg; EPSG:4326
+DEM.watershed@extent
+
+# min and max elevation, m above NAD83
+cellStats(DEM.watershed, range)
+```
+
+We can also use the information in the raster file to plot a histogram showing the distribution of its values:.
+
+```{r}
+
+getwd()
+setwd("./data/processed")
+
+# raster
+DEM.watershed <- raster("DEM_watershed.tif")
+DEM.watershed <- setMinMax(DEM.watershed)
+
+hist(DEM.watershed)
+```
+
+## Plot the raster
+
+Next, we show different ways to plot the watershed by specifying terrain colors, rainbow colors, and heat colors. We specify a numeric range for each type by passing it as a parameter to the method.
+
+```{r}
+# plot watershed with terrain colors
+plot(DEM.watershed, col = terrain.colors(5))
+plot(DEM.watershed, col = terrain.colors(10))
+plot(DEM.watershed, col = terrain.colors(100))
+
+# plot watershed with rainbow colors
+plot(DEM.watershed, col = rainbow(5))
+plot(DEM.watershed, col = rainbow(10))
+plot(DEM.watershed, col = rainbow(100))
+
+# plot watershed with heat colors
+plot(DEM.watershed, col = heat.colors(5))
+plot(DEM.watershed, col = heat.colors(10))
+plot(DEM.watershed, col = heat.colors(100))
+```
+
+We may also plot our original raster layer without specifying its colors as shown below.
+
+```{r}
+image(DEM.watershed)
+```
+
+This concludes the workflow explanation of how to delineate a watershed.
+
+## Contributors
+
+-   Raymond Lee - [rlee26\@uwsuper.edu](mailto:rlee26@uwsuper.edu){.email}
+-   Lucas Palomino - [lpalomin\@uwsuper.edu](mailto:lpalomin@uwsuper.edu){.email}
